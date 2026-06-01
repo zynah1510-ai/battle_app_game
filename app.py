@@ -6,8 +6,7 @@ st.set_page_config(page_title="Creature Battle Arena", page_icon="⚔️", layou
 st.title("⚔️ Creature Battle Arena")
 
 # ------------------ IMAGES ------------------
-dragon_img = "dragon.png"
-goat_img = "goat.png"
+
 
 # ------------------ MOVES ------------------
 dragon_moves = [
