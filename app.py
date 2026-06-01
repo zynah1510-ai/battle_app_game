@@ -7,7 +7,7 @@ st.title("⚔️ Creature Battle Arena")
 st.write("🔥 Dragon vs Goat — Final Battle!")
 
 # ------------------ IMAGES ------------------
-dragon_img = "https://cdn-icons-png.flaticon.com/512/616/616408.png"
+dragon_img = "https://www.vectorstock.com/royalty-free-vector/cute-cartoon-dragon-vector-52801538"
 goat_img = "https://cdn-icons-png.flaticon.com/512/616/616430.png"
 # ------------------ MOVES ------------------
 
