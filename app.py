@@ -7,20 +7,8 @@ st.title("⚔️ Creature Battle Arena")
 st.write("🔥 Dragon vs Goat — Final Battle!")
 
 # ------------------ IMAGES ------------------
-st.markdown("## 🧍 You: " + choice)
-st.markdown("## 👾 Enemy: " + enemy_name)
-
-if choice == "Dragon":
-    st.markdown("🐉")
-else:
-    st.markdown("🐐")
-
-st.markdown("---")
-
-if enemy_name == "Dragon":
-    st.markdown("🐉")
-else:
-    st.markdown("🐐")
+dragon_img = "https://upload.wikimedia.org/wikipedia/commons/thumb/9/99/Dragon_symbol.svg/512px-Dragon_symbol.svg.png"
+goat_img = "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1b/Goat_icon.svg/512px-Goat_icon.svg.png"
 
 # ------------------ MOVES ------------------
 
