@@ -7,7 +7,8 @@ st.title("⚔️ Creature Battle Arena")
 
 # ------------------ IMAGES ------------------
 
-
+dragon_img = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/149.png"
+goat_img = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/832.png"
 # ------------------ MOVES ------------------
 dragon_moves = [
     {"name": "Fireball 🔥", "damage": 30},
