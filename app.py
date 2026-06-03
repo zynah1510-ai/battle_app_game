@@ -1,160 +1,123 @@
 import streamlit as st
 import random
 
-st.set_page_config(page_title="Creature Battle Arena", page_icon="⚔️", layout="centered")
+# ---------------- MOVES ----------------
 
-st.title("⚔️ Creature Battle Arena")
-st.write("🔥 Dragon vs Goat RPG Battle System")
+class Move:
+    def __init__(self, name, damage):
+        self.name = name
+        self.damage = damage
 
-# ------------------ CREATURE IMAGES ------------------
+m1 = Move("Fireball", 30)
+m2 = Move("Punch", 20)
+m3 = Move("Slash", 10)
+m4 = Move("Kick", 20)
 
-dragon_img = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/149.png"
-goat_img = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/832.png"
+# ---------------- CREATURES ----------------
 
-# ------------------ MOVES ------------------
+class Creature:
+    def __init__(self, name, hp):
+        self.name = name
+        self.hp = hp
+        self.moves = []
 
-dragon_moves = [
-    {"name": "Fireball 🔥", "damage": 30, "img": "https://cdn-icons-png.flaticon.com/512/785/785116.png"},
-    {"name": "Dragon Claw 🐉", "damage": 20, "img": "https://cdn-icons-png.flaticon.com/512/616/616408.png"},
-    {"name": "Inferno Breath 🌋", "damage": 35, "img": "https://cdn-icons-png.flaticon.com/512/1686/1686815.png"}
-]
+    def add_move(self, move):
+        self.moves.append(move)
 
-goat_moves = [
-    {"name": "Horn Strike 🐐", "damage": 25, "img": "https://cdn-icons-png.flaticon.com/512/616/616430.png"},
-    {"name": "Stampede Rush 💨", "damage": 30, "img": "https://cdn-icons-png.flaticon.com/512/744/744922.png"},
-    {"name": "Battle Cry 📢", "damage": 20, "img": "https://cdn-icons-png.flaticon.com/512/1828/1828843.png"}
-]
+c1 = Creature("Dragon", 100)
+c3 = Creature("Goat", 100)
 
-# ------------------ SESSION STATE ------------------
+# Dragon moves
+c1.add_move(m1)  # Fireball
+c1.add_move(m3)  # Slash
 
-if "choice" not in st.session_state:
-    st.session_state.choice = None
+# Goat moves
+c3.add_move(m2)  # Punch
+c3.add_move(m4)  # Kick
+
+# ---------------- TITLE ----------------
+
+st.title("🐉 Dragon vs 🐐 Goat Battle")
+
+# ---------------- CREATURE CHOICE ----------------
+
+choice = st.selectbox(
+    "Choose your creature",
+    ["Dragon", "Goat"]
+)
+
+if choice == "Dragon":
+    player = c1
+    computer = c3
+else:
+    player = c3
+    computer = c1
+
+# ---------------- SESSION STATE ----------------
 
 if "player_hp" not in st.session_state:
     st.session_state.player_hp = 100
 
-if "enemy_hp" not in st.session_state:
-    st.session_state.enemy_hp = 100
+if "computer_hp" not in st.session_state:
+    st.session_state.computer_hp = 100
 
-if "log" not in st.session_state:
-    st.session_state.log = []
+# ---------------- HP DISPLAY ----------------
 
-if "game_over" not in st.session_state:
-    st.session_state.game_over = False
+st.write("### HP Status")
+st.write("Your HP:", st.session_state.player_hp)
+st.write("Computer HP:", st.session_state.computer_hp)
 
-def reset_game():
-    st.session_state.player_hp = 100
-    st.session_state.enemy_hp = 100
-    st.session_state.log = []
-    st.session_state.game_over = False
-    st.session_state.choice = None
+# ---------------- PLAYER MOVE ----------------
 
-# ------------------ CHARACTER SELECT ------------------
+move_names = [move.name for move in player.moves]
 
-if st.session_state.choice is None:
-    st.subheader("Choose your fighter")
+selected_move_name = st.selectbox(
+    "Choose your move",
+    move_names
+)
 
-    col1, col2 = st.columns(2)
-
-    with col1:
-        st.image(dragon_img, width=150)
-        if st.button("🐉 Dragon"):
-            st.session_state.choice = "Dragon"
-
-    with col2:
-        st.image(goat_img, width=150)
-        if st.button("🐐 Goat"):
-            st.session_state.choice = "Goat"
-
-    st.stop()
-
-# ------------------ GAME SETUP ------------------
-
-choice = st.session_state.choice
-enemy_name = "Goat" if choice == "Dragon" else "Dragon"
-
-player_moves = dragon_moves if choice == "Dragon" else goat_moves
-enemy_moves = goat_moves if choice == "Dragon" else dragon_moves
-
-# ------------------ HP BARS ------------------
-
-def hp_bar(label, hp):
-    st.write(f"**{label}**")
-    st.progress(max(hp, 0) / 100)
-    st.write(f"{hp}/100")
-
-# ------------------ UI ------------------
-
-st.markdown("---")
-
-col1, col2 = st.columns(2)
-
-with col1:
-    st.subheader("🧍 You")
-    st.image(dragon_img if choice == "Dragon" else goat_img, width=140)
-    hp_bar("Your HP", st.session_state.player_hp)
-
-with col2:
-    st.subheader("👾 Enemy")
-    st.image(dragon_img if enemy_name == "Dragon" else goat_img, width=140)
-    hp_bar("Enemy HP", st.session_state.enemy_hp)
-
-# ------------------ MOVE SELECTION (IMAGE BUTTONS) ------------------
-
-st.markdown("### ⚔️ Choose Attack")
-
-cols = st.columns(len(player_moves))
 selected_move = None
 
-for i, move in enumerate(player_moves):
-    with cols[i]:
-        st.image(move["img"], width=80)
-        if st.button(move["name"]):
-            st.session_state.selected_move = move
+for move in player.moves:
+    if move.name == selected_move_name:
+        selected_move = move
 
-# fallback
-if "selected_move" not in st.session_state:
-    st.session_state.selected_move = None
+# ---------------- ATTACK BUTTON ----------------
 
-move = st.session_state.selected_move
+if st.button("Attack"):
 
-# ------------------ ATTACK ------------------
+    # Player attacks
+    st.session_state.computer_hp -= selected_move.damage
 
-if st.button("⚔️ ATTACK") and move and not st.session_state.game_over:
+    st.write(
+        f"You used {selected_move.name}! "
+        f"(-{selected_move.damage} HP)"
+    )
 
-    # Player attack
-    st.session_state.enemy_hp -= move["damage"]
-    st.session_state.log.append(f"🧍 You used {move['name']} (-{move['damage']})")
-
-    if st.session_state.enemy_hp <= 0:
-        st.session_state.enemy_hp = 0
-        st.balloons()
-        st.success("🎉 YOU WIN!")
-        st.session_state.game_over = True
+    # Check if computer lost
+    if st.session_state.computer_hp <= 0:
+        st.session_state.computer_hp = 0
+        st.success("🎉 You Win!")
         st.stop()
 
-    # Enemy attack
-    enemy_move = random.choice(enemy_moves)
-    st.session_state.player_hp -= enemy_move["damage"]
-    st.session_state.log.append(f"👾 Enemy used {enemy_move['name']} (-{enemy_move['damage']})")
+    # Computer attacks
+    computer_move = random.choice(computer.moves)
 
+    st.session_state.player_hp -= computer_move.damage
+
+    st.write(
+        f"Computer used {computer_move.name}! "
+        f"(-{computer_move.damage} HP)"
+    )
+
+    # Check if player lost
     if st.session_state.player_hp <= 0:
         st.session_state.player_hp = 0
-        st.error("💀 YOU LOSE!")
-        st.session_state.game_over = True
-        st.stop()
+        st.error("💀 Computer Wins!")
 
-# ------------------ BATTLE LOG ------------------
+# ---------------- RESTART ----------------
 
-st.markdown("---")
-st.subheader("📜 Battle Log")
-
-for msg in st.session_state.log[-6:]:
-    st.write(msg)
-
-# ------------------ RESET ------------------
-
-st.markdown("---")
-
-if st.button("🔄 Restart Game"):
-    reset_game()
+if st.button("Restart Game"):
+    st.session_state.player_hp = 100
+    st.session_state.computer_hp = 100
+    st.rerun()
