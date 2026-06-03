@@ -29,17 +29,15 @@ class Creature:
 dragon = Creature("Dragon", 100)
 goat = Creature("Goat", 100)
 
-# Dragon moves
 dragon.add_move(m1)
 dragon.add_move(m3)
 
-# Goat moves
 goat.add_move(m2)
 goat.add_move(m4)
 
 # ---------------- TITLE ----------------
 
-st.title("🐉 Dragon vs 🐐 Goat Battle")
+st.title("⚔️ Creature Battle Arena ⚔️")
 
 # ---------------- SESSION STATE ----------------
 
@@ -61,14 +59,20 @@ if st.session_state.player_choice is None:
     col1, col2 = st.columns(2)
 
     with col1:
-        st.image("dragon.png", width=250)
+        st.image(
+            "https://images.unsplash.com/photo-1511884642898-4c92249e20b6",
+            width=250
+        )
 
         if st.button("🐉 Play as Dragon"):
             st.session_state.player_choice = "Dragon"
             st.rerun()
 
     with col2:
-        st.image("goat.png", width=250)
+        st.image(
+            "https://images.unsplash.com/photo-1524024973431-2ad916746881",
+            width=250
+        )
 
         if st.button("🐐 Play as Goat"):
             st.session_state.player_choice = "Goat"
@@ -91,10 +95,24 @@ st.success(f"You chose {player.name}")
 
 # ---------------- HP DISPLAY ----------------
 
-st.subheader("HP Status")
+player_hp = max(0, st.session_state.player_hp)
+computer_hp = max(0, st.session_state.computer_hp)
 
-st.write(f"Your HP: {st.session_state.player_hp}")
-st.write(f"Computer HP: {st.session_state.computer_hp}")
+st.subheader("❤️ Health")
+
+col1, col2 = st.columns(2)
+
+with col1:
+    st.write("### You")
+    st.write(player.name)
+    st.progress(player_hp / 100)
+    st.write(f"{player_hp}/100 HP")
+
+with col2:
+    st.write("### Computer")
+    st.write(computer.name)
+    st.progress(computer_hp / 100)
+    st.write(f"{computer_hp}/100 HP")
 
 # ---------------- MOVE SELECTION ----------------
 
@@ -112,23 +130,21 @@ for move in player.moves:
         selected_move = move
         break
 
-# ---------------- ATTACK BUTTON ----------------
+# ---------------- ATTACK ----------------
 
 if st.button("⚔ Attack"):
 
     # Player attacks
     st.session_state.computer_hp -= selected_move.damage
 
-    if st.session_state.computer_hp < 0:
-        st.session_state.computer_hp = 0
-
     st.write(
-        f"You used {selected_move.name}! "
-        f"(-{selected_move.damage} HP)"
+        f"🔥 You used {selected_move.name} "
+        f"and dealt {selected_move.damage} damage!"
     )
 
-    # Check if computer lost
+    # Computer defeated
     if st.session_state.computer_hp <= 0:
+        st.session_state.computer_hp = 0
         st.success("🎉 YOU WIN!")
         st.stop()
 
@@ -137,19 +153,17 @@ if st.button("⚔ Attack"):
 
     st.session_state.player_hp -= computer_move.damage
 
-    if st.session_state.player_hp < 0:
-        st.session_state.player_hp = 0
-
     st.write(
-        f"Computer used {computer_move.name}! "
-        f"(-{computer_move.damage} HP)"
+        f"💥 Computer used {computer_move.name} "
+        f"and dealt {computer_move.damage} damage!"
     )
 
-    # Check if player lost
+    # Player defeated
     if st.session_state.player_hp <= 0:
+        st.session_state.player_hp = 0
         st.error("💀 COMPUTER WINS!")
 
-# ---------------- RESTART BUTTON ----------------
+# ---------------- RESTART ----------------
 
 if st.button("🔄 Restart Game"):
 
