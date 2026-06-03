@@ -1,7 +1,12 @@
 import streamlit as st
 import random
 
-# ---------------- MOVES ----------------
+# ================= IMAGES =================
+
+dragon_img = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/149.png"
+goat_img = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/832.png"
+
+# ================= MOVES =================
 
 class Move:
     def __init__(self, name, damage):
@@ -9,12 +14,13 @@ class Move:
         self.damage = damage
 
 
-m1 = Move("Fireball", 30)
-m2 = Move("Punch", 20)
-m3 = Move("Slash", 10)
-m4 = Move("Kick", 20)
+fireball = Move("Fireball", 30)
+slash = Move("Slash", 10)
 
-# ---------------- CREATURES ----------------
+punch = Move("Punch", 20)
+kick = Move("Kick", 20)
+
+# ================= CREATURE =================
 
 class Creature:
     def __init__(self, name, hp):
@@ -29,17 +35,13 @@ class Creature:
 dragon = Creature("Dragon", 100)
 goat = Creature("Goat", 100)
 
-dragon.add_move(m1)
-dragon.add_move(m3)
+dragon.add_move(fireball)
+dragon.add_move(slash)
 
-goat.add_move(m2)
-goat.add_move(m4)
+goat.add_move(punch)
+goat.add_move(kick)
 
-# ---------------- TITLE ----------------
-
-st.title("⚔️ Creature Battle Arena ⚔️")
-
-# ---------------- SESSION STATE ----------------
+# ================= SESSION STATE =================
 
 if "player_choice" not in st.session_state:
     st.session_state.player_choice = None
@@ -50,7 +52,11 @@ if "player_hp" not in st.session_state:
 if "computer_hp" not in st.session_state:
     st.session_state.computer_hp = 100
 
-# ---------------- CREATURE SELECTION ----------------
+# ================= TITLE =================
+
+st.title("⚔️ Creature Battle Arena ⚔️")
+
+# ================= CHOOSE CREATURE =================
 
 if st.session_state.player_choice is None:
 
@@ -59,62 +65,58 @@ if st.session_state.player_choice is None:
     col1, col2 = st.columns(2)
 
     with col1:
-        st.image(
-            "https://images.unsplash.com/photo-1511884642898-4c92249e20b6",
-            width=250
-        )
+        st.image(DRAGON_URL, width=250)
 
-        if st.button("🐉 Play as Dragon"):
+        if st.button("🐉 Choose Dragon"):
             st.session_state.player_choice = "Dragon"
             st.rerun()
 
     with col2:
-        st.image(
-            "https://images.unsplash.com/photo-1524024973431-2ad916746881",
-            width=250
-        )
+        st.image(GOAT_URL, width=250)
 
-        if st.button("🐐 Play as Goat"):
+        if st.button("🐐 Choose Goat"):
             st.session_state.player_choice = "Goat"
             st.rerun()
 
     st.stop()
 
-# ---------------- ASSIGN PLAYER ----------------
+# ================= ASSIGN CREATURES =================
 
 if st.session_state.player_choice == "Dragon":
     player = dragon
     computer = goat
+    player_image = DRAGON_URL
+    computer_image = GOAT_URL
 else:
     player = goat
     computer = dragon
+    player_image = GOAT_URL
+    computer_image = DRAGON_URL
 
-# ---------------- SHOW CHOICE ----------------
+# ================= BATTLE SCREEN =================
 
 st.success(f"You chose {player.name}")
-
-# ---------------- HP DISPLAY ----------------
 
 player_hp = max(0, st.session_state.player_hp)
 computer_hp = max(0, st.session_state.computer_hp)
 
-st.subheader("❤️ Health")
-
 col1, col2 = st.columns(2)
 
 with col1:
-    st.write("### You")
-    st.write(player.name)
+    st.subheader("🧑 You")
+    st.image(player_image, width=220)
     st.progress(player_hp / 100)
-    st.write(f"{player_hp}/100 HP")
+    st.write(f"❤️ HP: {player_hp}/100")
 
 with col2:
-    st.write("### Computer")
-    st.write(computer.name)
+    st.subheader("💻 Computer")
+    st.image(computer_image, width=220)
     st.progress(computer_hp / 100)
-    st.write(f"{computer_hp}/100 HP")
+    st.write(f"❤️ HP: {computer_hp}/100")
 
-# ---------------- MOVE SELECTION ----------------
+st.divider()
+
+# ================= MOVE CHOICE =================
 
 move_names = [move.name for move in player.moves]
 
@@ -130,11 +132,10 @@ for move in player.moves:
         selected_move = move
         break
 
-# ---------------- ATTACK ----------------
+# ================= ATTACK =================
 
-if st.button("⚔ Attack"):
+if st.button("⚔ ATTACK"):
 
-    # Player attacks
     st.session_state.computer_hp -= selected_move.damage
 
     st.write(
@@ -142,13 +143,16 @@ if st.button("⚔ Attack"):
         f"and dealt {selected_move.damage} damage!"
     )
 
-    # Computer defeated
     if st.session_state.computer_hp <= 0:
         st.session_state.computer_hp = 0
-        st.success("🎉 YOU WIN!")
+
+        st.balloons()
+
+        st.success("🏆 YOU WIN!")
+        st.image(player_image, width=300)
+
         st.stop()
 
-    # Computer attacks
     computer_move = random.choice(computer.moves)
 
     st.session_state.player_hp -= computer_move.damage
@@ -158,12 +162,15 @@ if st.button("⚔ Attack"):
         f"and dealt {computer_move.damage} damage!"
     )
 
-    # Player defeated
     if st.session_state.player_hp <= 0:
         st.session_state.player_hp = 0
-        st.error("💀 COMPUTER WINS!")
 
-# ---------------- RESTART ----------------
+        st.error("💀 COMPUTER WINS!")
+        st.image(computer_image, width=300)
+
+# ================= RESTART =================
+
+st.divider()
 
 if st.button("🔄 Restart Game"):
 
