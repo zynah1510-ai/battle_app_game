@@ -216,14 +216,6 @@ if selected_move:
 
             st.image(computer_image, width=300)
 
-# ================= WIN/LOSS MESSAGE =================
-
-if st.session_state.computer_hp <= 0:
-    st.success("🏆 YOU WIN!")
-
-if st.session_state.player_hp <= 0:
-    st.error("💀 COMPUTER WINS!")
-
 # ================= RESTART BUTTON =================
 
 st.divider()
