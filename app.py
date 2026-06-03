@@ -65,14 +65,14 @@ if st.session_state.player_choice is None:
     col1, col2 = st.columns(2)
 
     with col1:
-        st.image(DRAGON_URL, width=250)
+        st.image(dragon_img, width=250)
 
         if st.button("🐉 Choose Dragon"):
             st.session_state.player_choice = "Dragon"
             st.rerun()
 
     with col2:
-        st.image(GOAT_URL, width=250)
+        st.image(goat_img, width=250)
 
         if st.button("🐐 Choose Goat"):
             st.session_state.player_choice = "Goat"
@@ -85,13 +85,13 @@ if st.session_state.player_choice is None:
 if st.session_state.player_choice == "Dragon":
     player = dragon
     computer = goat
-    player_image = DRAGON_URL
-    computer_image = GOAT_URL
+    player_image = dragon_img
+    computer_image = goat_img
 else:
     player = goat
     computer = dragon
-    player_image = GOAT_URL
-    computer_image = DRAGON_URL
+    player_image = goat_img
+    computer_image = dragon_img
 
 # ================= BATTLE SCREEN =================
 
