@@ -8,6 +8,7 @@ class Move:
         self.name = name
         self.damage = damage
 
+
 m1 = Move("Fireball", 30)
 m2 = Move("Punch", 20)
 m3 = Move("Slash", 10)
@@ -24,36 +25,26 @@ class Creature:
     def add_move(self, move):
         self.moves.append(move)
 
-c1 = Creature("Dragon", 100)
-c3 = Creature("Goat", 100)
+
+dragon = Creature("Dragon", 100)
+goat = Creature("Goat", 100)
 
 # Dragon moves
-c1.add_move(m1)  # Fireball
-c1.add_move(m3)  # Slash
+dragon.add_move(m1)
+dragon.add_move(m3)
 
 # Goat moves
-c3.add_move(m2)  # Punch
-c3.add_move(m4)  # Kick
+goat.add_move(m2)
+goat.add_move(m4)
 
 # ---------------- TITLE ----------------
 
 st.title("🐉 Dragon vs 🐐 Goat Battle")
 
-# ---------------- CREATURE CHOICE ----------------
-
-choice = st.selectbox(
-    "Choose your creature",
-    ["Dragon", "Goat"]
-)
-
-if choice == "Dragon":
-    player = c1
-    computer = c3
-else:
-    player = c3
-    computer = c1
-
 # ---------------- SESSION STATE ----------------
+
+if "player_choice" not in st.session_state:
+    st.session_state.player_choice = None
 
 if "player_hp" not in st.session_state:
     st.session_state.player_hp = 100
@@ -61,13 +52,51 @@ if "player_hp" not in st.session_state:
 if "computer_hp" not in st.session_state:
     st.session_state.computer_hp = 100
 
+# ---------------- CREATURE SELECTION ----------------
+
+if st.session_state.player_choice is None:
+
+    st.header("Choose Your Creature")
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+        st.image("dragon.png", width=250)
+
+        if st.button("🐉 Play as Dragon"):
+            st.session_state.player_choice = "Dragon"
+            st.rerun()
+
+    with col2:
+        st.image("goat.png", width=250)
+
+        if st.button("🐐 Play as Goat"):
+            st.session_state.player_choice = "Goat"
+            st.rerun()
+
+    st.stop()
+
+# ---------------- ASSIGN PLAYER ----------------
+
+if st.session_state.player_choice == "Dragon":
+    player = dragon
+    computer = goat
+else:
+    player = goat
+    computer = dragon
+
+# ---------------- SHOW CHOICE ----------------
+
+st.success(f"You chose {player.name}")
+
 # ---------------- HP DISPLAY ----------------
 
-st.write("### HP Status")
-st.write("Your HP:", st.session_state.player_hp)
-st.write("Computer HP:", st.session_state.computer_hp)
+st.subheader("HP Status")
 
-# ---------------- PLAYER MOVE ----------------
+st.write(f"Your HP: {st.session_state.player_hp}")
+st.write(f"Computer HP: {st.session_state.computer_hp}")
+
+# ---------------- MOVE SELECTION ----------------
 
 move_names = [move.name for move in player.moves]
 
@@ -81,13 +110,17 @@ selected_move = None
 for move in player.moves:
     if move.name == selected_move_name:
         selected_move = move
+        break
 
 # ---------------- ATTACK BUTTON ----------------
 
-if st.button("Attack"):
+if st.button("⚔ Attack"):
 
     # Player attacks
     st.session_state.computer_hp -= selected_move.damage
+
+    if st.session_state.computer_hp < 0:
+        st.session_state.computer_hp = 0
 
     st.write(
         f"You used {selected_move.name}! "
@@ -96,14 +129,16 @@ if st.button("Attack"):
 
     # Check if computer lost
     if st.session_state.computer_hp <= 0:
-        st.session_state.computer_hp = 0
-        st.success("🎉 You Win!")
+        st.success("🎉 YOU WIN!")
         st.stop()
 
     # Computer attacks
     computer_move = random.choice(computer.moves)
 
     st.session_state.player_hp -= computer_move.damage
+
+    if st.session_state.player_hp < 0:
+        st.session_state.player_hp = 0
 
     st.write(
         f"Computer used {computer_move.name}! "
@@ -112,12 +147,14 @@ if st.button("Attack"):
 
     # Check if player lost
     if st.session_state.player_hp <= 0:
-        st.session_state.player_hp = 0
-        st.error("💀 Computer Wins!")
+        st.error("💀 COMPUTER WINS!")
 
-# ---------------- RESTART ----------------
+# ---------------- RESTART BUTTON ----------------
 
-if st.button("Restart Game"):
+if st.button("🔄 Restart Game"):
+
+    st.session_state.player_choice = None
     st.session_state.player_hp = 100
     st.session_state.computer_hp = 100
+
     st.rerun()
