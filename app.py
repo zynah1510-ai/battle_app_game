@@ -93,6 +93,14 @@ else:
     player_image = goat_img
     computer_image = dragon_img
 
+# ================= GAME OVER CHECK =================
+
+game_over = (
+    st.session_state.player_hp <= 0
+    or
+    st.session_state.computer_hp <= 0
+)
+
 # ================= BATTLE SCREEN =================
 
 st.success(f"You chose {player.name}")
@@ -116,25 +124,59 @@ with col2:
 
 st.divider()
 
-# ================= MOVE CHOICE =================
+# ================= ATTACK BUTTONS =================
 
-move_names = [move.name for move in player.moves]
-
-selected_move_name = st.selectbox(
-    "Choose your move",
-    move_names
-)
+st.subheader("Choose Attack")
 
 selected_move = None
 
-for move in player.moves:
-    if move.name == selected_move_name:
-        selected_move = move
-        break
+if player.name == "Dragon":
 
-# ================= ATTACK =================
+    col1, col2 = st.columns(2)
 
-if st.button("⚔ ATTACK"):
+    with col1:
+        fireball_clicked = st.button(
+            "🔥 Fireball",
+            disabled=game_over
+        )
+
+    with col2:
+        slash_clicked = st.button(
+            "🗡 Slash",
+            disabled=game_over
+        )
+
+    if fireball_clicked:
+        selected_move = fireball
+
+    elif slash_clicked:
+        selected_move = slash
+
+else:
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+        punch_clicked = st.button(
+            "👊 Punch",
+            disabled=game_over
+        )
+
+    with col2:
+        kick_clicked = st.button(
+            "🦵 Kick",
+            disabled=game_over
+        )
+
+    if punch_clicked:
+        selected_move = punch
+
+    elif kick_clicked:
+        selected_move = kick
+
+# ================= ATTACK LOGIC =================
+
+if selected_move:
 
     st.session_state.computer_hp -= selected_move.damage
 
@@ -144,31 +186,45 @@ if st.button("⚔ ATTACK"):
     )
 
     if st.session_state.computer_hp <= 0:
+
         st.session_state.computer_hp = 0
 
         st.balloons()
 
         st.success("🏆 YOU WIN!")
+
         st.image(player_image, width=300)
 
-        st.stop()
+    else:
 
-    computer_move = random.choice(computer.moves)
+        computer_move = random.choice(computer.moves)
 
-    st.session_state.player_hp -= computer_move.damage
+        st.session_state.player_hp -= computer_move.damage
 
-    st.write(
-        f"💥 Computer used {computer_move.name} "
-        f"and dealt {computer_move.damage} damage!"
-    )
+        st.write(
+            f"💥 Computer used "
+            f"{computer_move.name} "
+            f"and dealt "
+            f"{computer_move.damage} damage!"
+        )
 
-    if st.session_state.player_hp <= 0:
-        st.session_state.player_hp = 0
+        if st.session_state.player_hp <= 0:
 
-        st.error("💀 COMPUTER WINS!")
-        st.image(computer_image, width=300)
+            st.session_state.player_hp = 0
 
-# ================= RESTART =================
+            st.error("💀 COMPUTER WINS!")
+
+            st.image(computer_image, width=300)
+
+# ================= WIN/LOSS MESSAGE =================
+
+if st.session_state.computer_hp <= 0:
+    st.success("🏆 YOU WIN!")
+
+if st.session_state.player_hp <= 0:
+    st.error("💀 COMPUTER WINS!")
+
+# ================= RESTART BUTTON =================
 
 st.divider()
 
